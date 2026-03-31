@@ -2,12 +2,13 @@ import joblib
 import numpy as np
 import os
 import logging
+import argparse
 
 logging.basicConfig(
-    level=logging.INFO,  # Set log level
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',  # Set log format
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.StreamHandler()  # Output log to console
+        logging.StreamHandler()
     ]
 )
 
@@ -26,7 +27,6 @@ def prepare_data(train_folds=['fold0', 'fold1', 'fold5', 'fold7'], val_folds=['f
     train_images, train_data, train_labels = train_dataset.image_paths, train_dataset.features, train_dataset.labels
 
     if val_folds is None:
-        # split the train data into train and validation data (80-20)
         np.random.seed(5)
         n = train_data.shape[0]
         idx = np.random.permutation(n)
@@ -88,30 +88,62 @@ def test(train_folds=['fold0', 'fold1', 'fold5', 'fold7'],
 
     clf = joblib.load(model_path)
 
-    # train_pred = clf.predict(train_data)
     val_pred = clf.predict(val_data)
 
     if confusion_matrix_save_path:
         plot_confusion_matrix(val_labels, val_pred, save_path=confusion_matrix_save_path)
 
     plot_roc_curves(val_labels-1, clf.predict_proba(val_data),
-                    # Use class_map keys as category names
                      class_names=[k for k in class_map.keys()],
                      save_path=roc_curves_save_path)
 
+
+def main():
+    parser = argparse.ArgumentParser(description='Train or test cell classification model')
     
+    parser.add_argument('--mode', type=str, choices=['train', 'test'], default='train',
+                        help='Mode: train or test')
+    parser.add_argument('--data_root', type=str, required=True,
+                        help='Path to the dataset root directory')
+    parser.add_argument('--train_folds', type=str, nargs='+', default=None,
+                        help='List of training fold names (e.g., fold0 fold1 fold2)')
+    parser.add_argument('--val_folds', type=str, nargs='+', default=None,
+                        help='List of validation fold names (e.g., fold3 fold4)')
+    parser.add_argument('--model_path', type=str, required=True,
+                        help='Path to save/load the model')
+    parser.add_argument('--feature_type', type=str, default='all',
+                        choices=['traditional_feature', 'deep_feature', 'all'],
+                        help='Type of features to use')
+    parser.add_argument('--confusion_matrix_path', type=str, default=None,
+                        help='Path to save confusion matrix')
+    parser.add_argument('--roc_curves_path', type=str, default=None,
+                        help='Path to save ROC curves')
+    
+    args = parser.parse_args()
+    
+    if args.mode == 'train':
+        logging.info(f"Training model with feature type: {args.feature_type}")
+        train_val(
+            train_folds=args.train_folds,
+            val_folds=args.val_folds,
+            data_root=args.data_root,
+            confusion_matrix_save_path=args.confusion_matrix_path,
+            model_path=args.model_path,
+            feature_type=args.feature_type,
+            roc_curves_save_path=args.roc_curves_path
+        )
+    elif args.mode == 'test':
+        logging.info(f"Testing model with feature type: {args.feature_type}")
+        test(
+            train_folds=args.train_folds,
+            val_folds=args.val_folds,
+            data_root=args.data_root,
+            confusion_matrix_save_path=args.confusion_matrix_path,
+            model_path=args.model_path,
+            feature_type=args.feature_type,
+            roc_curves_save_path=args.roc_curves_path
+        )
+
+
 if __name__ == '__main__':
-    feature_type='traditional_feature' # 'all' or 'deep_feature'
-    train_val(train_folds=None, val_folds=None,
-               data_root='path/to/single_cell_dataset',
-               confusion_matrix_save_path=f'path/to/{feature_type}/confusion_matrix.png',
-               model_path=f'path/to/{feature_type}/model.pkl',
-               feature_type=feature_type,
-                roc_curves_save_path=f'path/to/{feature_type}/roc_curves.png'
-    )
-    # test(train_folds=None, val_folds=None,
-    #            data_root='path/to/single_cell_dataset',
-    #            confusion_matrix_save_path='path/to/confusion_matrix_val.png',
-    #            model_path='path/to/model.pkl',
-    #            feature_type='deep_feature'
-    # )
+    main()
