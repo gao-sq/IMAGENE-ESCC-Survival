@@ -1,0 +1,32 @@
+{
+    "42":{
+        "path": {"feature_selection_method": "all", "model_type": "cox"},
+        "clinical": {"feature_selection_method": "all", "model_type": "cox"},
+        "wes": {"feature_selection_method": "univariate", "model_type": "cox"},
+        "tcr": {"feature_selection_method": "all", "model_type": "rsf"}
+    },
+    "123":{
+        "path": {"feature_selection_method": "lasso_cox", "model_type": "rsf"},
+        "clinical": {"feature_selection_method": "lasso_cox", "model_type": "cox"},
+        "wes": {"feature_selection_method": "univariate", "model_type": "cox"},
+        "tcr": {"feature_selection_method": "all", "model_type": "rsf"}
+    },
+    "456":{
+        "path": {"feature_selection_method": "auc", "model_type": "cox"},
+        "clinical": {"feature_selection_method": "lasso_cox", "model_type": "cox"},
+        "wes": {"feature_selection_method": "auc", "model_type": "rsf"},
+        "tcr": {"feature_selection_method": "all", "model_type": "cox"}
+    },
+    "789":{
+        "path": {"feature_selection_method": "lasso_cox", "model_type": "rsf"},
+        "clinical": {"feature_selection_method": "lasso_cox", "model_type": "cox"},
+        "wes": {"feature_selection_method": "auc", "model_type": "cox"},
+        "tcr": {"feature_selection_method": "lasso_cox", "model_type": "rsf"}
+    },
+    "101112":{
+        "path": {"feature_selection_method": "lasso_cox", "model_type": "cox"},
+        "clinical": {"feature_selection_method": "all", "model_type": "cox"},
+        "wes": {"feature_selection_method": "univariate", "model_type": "rsf"},
+        "tcr": {"feature_selection_method": "lasso_cox", "model_type": "rsf"}
+    }
+}
