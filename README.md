@@ -23,8 +23,12 @@ public_version/
 │   └── main.py                     # Main training script
 │
 ├── tissue_classfication/           # Tissue classification module
-│   ├── pred_tissue_label.py        # Predict tissue labels
-│   └── swin.py                     # Swin Transformer config
+│   ├── config/                     # Configuration files
+│   │   ├── swin.py                # Swin Transformer config
+│   │   └── gigapath.py           # GigaPath config
+│   ├── models/                     # Model definitions
+│   │   └── giga_path_patch_encoder.py  # GigaPath patch encoder
+│   └── pred_tissue_label.py        # Predict tissue labels
 │
 ├── calculate_features/          # Feature extraction module
 │   ├── calculate_region_features.py    # Calculate region-based features
